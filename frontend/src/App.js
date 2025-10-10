@@ -458,52 +458,105 @@ function App() {
   );
 
   // Inventory Component
-  const Inventory = () => (
-    <div className="card">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">Food Inventory</h2>
-      
-      {foodItems.length === 0 ? (
-        <div className="text-center py-12">
-          <div className="text-6xl mb-4">🍽️</div>
-          <p className="text-gray-600">No food items yet. Add your first item!</p>
+  const Inventory = () => {
+    const handleFilterChange = async (newFilter) => {
+      setFilterStatus(newFilter);
+      await fetchFoodItems(newFilter);
+    };
+
+    return (
+      <div className="card">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-gray-800">Food Inventory</h2>
+          <div className="flex gap-2">
+            <button
+              onClick={() => handleFilterChange('all')}
+              className={`px-3 py-1 rounded text-sm font-medium transition ${
+                filterStatus === 'all'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              All
+            </button>
+            <button
+              onClick={() => handleFilterChange('expired')}
+              className={`px-3 py-1 rounded text-sm font-medium transition ${
+                filterStatus === 'expired'
+                  ? 'bg-red-600 text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              Expired
+            </button>
+            <button
+              onClick={() => handleFilterChange('expiring_soon')}
+              className={`px-3 py-1 rounded text-sm font-medium transition ${
+                filterStatus === 'expiring_soon'
+                  ? 'bg-orange-600 text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              Expiring Soon (1-7 days)
+            </button>
+            <button
+              onClick={() => handleFilterChange('fresh')}
+              className={`px-3 py-1 rounded text-sm font-medium transition ${
+                filterStatus === 'fresh'
+                  ? 'bg-green-600 text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              Fresh (&gt;7 days)
+            </button>
+          </div>
         </div>
-      ) : (
-        <div className="space-y-3">
-          {foodItems.map((item) => {
-            const status = getExpirationStatus(item.expiration_date);
-            return (
-              <div key={item.id} className="food-item">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center space-x-4 flex-1">
-                    <span className="text-3xl">{getCategoryIcon(item.category)}</span>
-                    <div className="flex-1">
-                      <div className="font-bold text-lg text-gray-800">{item.name}</div>
-                      <div className="text-sm text-gray-600 space-y-1 mt-1">
-                        <div>📦 {item.quantity} {item.unit} • 🏪 {item.storage_condition}</div>
-                        <div>🗓️ Added: {formatDate(item.purchase_date)}</div>
-                        <div>⏰ Expires: {formatDate(item.expiration_date)}</div>
-                        {item.notes && <div>📝 {item.notes}</div>}
+        
+        {foodItems.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">🍽️</div>
+            <p className="text-gray-600">
+              {filterStatus === 'all' ? 'No food items yet. Add your first item!' : `No ${filterStatus.replace('_', ' ')} items found.`}
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {foodItems.map((item) => {
+              const status = getExpirationStatus(item.expiration_date);
+              return (
+                <div key={item.id} className="food-item">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center space-x-4 flex-1">
+                      <span className="text-3xl">{getStorageIcon(item.storage_condition)}</span>
+                      <div className="flex-1">
+                        <div className="font-bold text-lg text-gray-800">{item.name}</div>
+                        <div className="text-sm text-gray-600 space-y-1 mt-1">
+                          <div>📊 {item.quantity} {item.unit} • Storage: {item.storage_condition}</div>
+                          <div>🗓️ Added: {formatDate(item.purchase_date)}</div>
+                          <div>⏰ Expires: {formatDate(item.expiration_date)}</div>
+                          {item.notes && <div>📝 {item.notes}</div>}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <span className={`badge ${status.color}`}>{status.label}</span>
-                    <button
-                      onClick={() => handleDelete(item.id)}
-                      className="btn-icon btn-danger"
-                      title="Delete"
-                    >
-                      🗑️
-                    </button>
+                    <div className="flex items-center space-x-3">
+                      <span className={`badge ${status.color}`}>{status.label}</span>
+                      <button
+                        onClick={() => handleDelete(item.id)}
+                        className="btn-icon btn-danger"
+                        title="Delete"
+                      >
+                        🗑️
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   // Calendar Component
   const Calendar = () => {
