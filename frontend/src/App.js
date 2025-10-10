@@ -31,10 +31,14 @@ function App() {
   // Fetch data on component mount
   useEffect(() => {
     fetchAllData();
-    // Refresh data every 30 seconds
-    const interval = setInterval(fetchAllData, 30000);
+    // Refresh data every 30 seconds, but not when in Add tab to prevent form issues
+    const interval = setInterval(() => {
+      if (activeTab !== 'add') {
+        fetchAllData();
+      }
+    }, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [activeTab]);
 
   const fetchAllData = async () => {
     try {
