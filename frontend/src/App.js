@@ -718,14 +718,14 @@ function App() {
 
       {/* Main Content */}
       <main className="main-content">
-        {activeTab === 'dashboard' && <Dashboard />}
-        {activeTab === 'add' && <AddFoodForm />}
-        {activeTab === 'inventory' && <Inventory />}
-        {activeTab === 'calendar' && <Calendar />}
+        {activeTab === 'dashboard' && renderDashboard()}
+        {activeTab === 'add' && renderAddFoodForm()}
+        {activeTab === 'inventory' && renderInventory()}
+        {activeTab === 'calendar' && renderCalendar()}
       </main>
 
       {/* Notification Panel */}
-      <NotificationPanel />
+      {renderNotificationPanel()}
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
