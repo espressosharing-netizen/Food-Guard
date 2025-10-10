@@ -247,9 +247,35 @@ async def create_food_item(item: FoodItemCreate):
         raise HTTPException(status_code=500, detail=f"Failed to create food item: {str(e)}")
 
 @app.get("/api/food-items", response_model=List[FoodItem])
-async def get_food_items():
-    """Get all food items."""
+async def get_food_items(filter: Optional[str] = None):
+    """Get all food items with optional filtering by expiration status.
+    
+    Filter options:
+    - expired: Items that have already expired
+    - expiring_soon: Items expiring within 1-7 days
+    - fresh: Items expiring in more than 7 days
+    - all or None: All items
+    """
     items = await db.food_items.find().to_list(length=None)
+    
+    # Apply filtering if requested
+    if filter and filter != "all":
+        now = datetime.utcnow()
+        filtered_items = []
+        
+        for item in items:
+            expiration_date = datetime.fromisoformat(item['expiration_date'])
+            days_until_expiry = (expiration_date - now).days
+            
+            if filter == "expired" and days_until_expiry < 0:
+                filtered_items.append(item)
+            elif filter == "expiring_soon" and 0 <= days_until_expiry <= 7:
+                filtered_items.append(item)
+            elif filter == "fresh" and days_until_expiry > 7:
+                filtered_items.append(item)
+        
+        items = filtered_items
+    
     for item in items:
         item.pop('_id', None)
     return items
