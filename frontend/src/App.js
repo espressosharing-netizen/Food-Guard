@@ -12,6 +12,10 @@ function App() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -20,7 +24,8 @@ function App() {
     quantity: 1,
     unit: 'each',
     storage_condition: 'pantry',
-    notes: ''
+    notes: '',
+    emoji: ''
   });
 
   // Fetch data on component mount
