@@ -630,7 +630,7 @@ function App() {
   };
 
   // Notification Panel
-  const NotificationPanel = () => (
+  const renderNotificationPanel = () => (
     <div className={`notification-panel ${showNotifications ? 'show' : ''}`}>
       <div className="notification-header">
         <h3 className="text-lg font-bold">Notifications</h3>
