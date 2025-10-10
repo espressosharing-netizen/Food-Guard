@@ -92,7 +92,7 @@ class CalendarEvent(BaseModel):
 
 # Helper function to use DeepSeek AI
 async def analyze_food_with_ai(food_name: str, category: Optional[str] = None):
-    """Use DeepSeek to analyze food item and suggest category and shelf life."""
+    """Use DeepSeek to analyze food item and suggest category, shelf life, and emoji."""
     try:
         prompt = f"""Analyze this food item and provide structured information:
 Food: {food_name}
@@ -102,11 +102,12 @@ Return a JSON object with:
 {{
     "category": "produce|dairy|meat|packaged|frozen|other",
     "shelf_life_days": <number of days>,
-    "storage_recommendation": "pantry|refrigerated|frozen",
+    "storage_recommendation": "pantry|refrigerated|frozen|room_temp",
+    "emoji": "<single most appropriate emoji for this food>",
     "tips": "brief storage tip"
 }}
 
-Be concise and accurate."""
+Be concise and accurate. Choose the most representative emoji for the food item."""
 
         response = await deepseek_client.chat.completions.create(
             model="deepseek-chat",
@@ -136,6 +137,7 @@ Be concise and accurate."""
             "category": category or "other",
             "shelf_life_days": 7,
             "storage_recommendation": "pantry",
+            "emoji": "🍽️",
             "tips": "Store in a cool, dry place"
         }
 
