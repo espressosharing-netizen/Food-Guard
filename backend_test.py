@@ -545,9 +545,26 @@ class FoodManagementTester:
         print(f"🔗 Testing against: {BASE_URL}")
         print("=" * 60)
         
-        # Test in logical order
+        # Test in logical order - prioritize new features first
         self.test_root_endpoint()
         time.sleep(0.5)  # Small delay between tests
+        
+        # HIGH PRIORITY NEW FEATURES
+        print("\n🎯 TESTING NEW HIGH PRIORITY FEATURES")
+        print("=" * 50)
+        
+        self.test_emoji_field_and_ai_suggestion()
+        time.sleep(1)
+        
+        self.test_inventory_filtering()
+        time.sleep(1)
+        
+        self.test_notification_timing_fix()
+        time.sleep(1)
+        
+        # EXISTING FUNCTIONALITY TESTS
+        print("\n🔧 TESTING EXISTING FUNCTIONALITY")
+        print("=" * 50)
         
         self.test_create_food_items()
         time.sleep(0.5)
