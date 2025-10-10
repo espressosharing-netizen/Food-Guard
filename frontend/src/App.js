@@ -314,7 +314,7 @@ function App() {
   );
 
   // Add Food Form Component
-  const AddFoodForm = () => (
+  const renderAddFoodForm = () => (
     <div className="card">
       <h2 className="text-2xl font-bold mb-6 text-gray-800">Add New Food Item</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
