@@ -583,7 +583,7 @@ function App() {
   };
 
   // Calendar Component
-  const Calendar = () => {
+  const renderCalendar = () => {
     const groupedEvents = {};
     
     calendarEvents.forEach(event => {
