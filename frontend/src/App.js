@@ -40,7 +40,7 @@ function App() {
     return () => clearInterval(interval);
   }, [activeTab]);
 
-  const fetchAllData = useCallback(async () => {
+  const fetchAllData = async () => {
     try {
       await Promise.all([
         fetchFoodItems(),
@@ -52,7 +52,7 @@ function App() {
     } catch (error) {
       console.error('Error fetching data:', error);
     }
-  }, []);
+  };
 
   const fetchFoodItems = async (filter = 'all') => {
     try {
