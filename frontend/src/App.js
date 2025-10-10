@@ -323,6 +323,7 @@ function App() {
             Food Name *
           </label>
           <input
+            key="food-name-input"
             type="text"
             required
             className="input"
