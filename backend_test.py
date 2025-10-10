@@ -259,6 +259,258 @@ class FoodManagementTester:
         except Exception as e:
             self.log_test("Get Dashboard Stats", False, f"Request failed: {str(e)}")
     
+    def test_emoji_field_and_ai_suggestion(self):
+        """Test emoji field storage and AI suggestion functionality"""
+        print("\n🎭 Testing Emoji Field and AI Suggestion...")
+        
+        # Test 1: Create food item WITH emoji provided
+        food_with_emoji = {
+            "name": "Fresh Apple",
+            "category": "produce",
+            "quantity": 3,
+            "unit": "each",
+            "emoji": "🍎"
+        }
+        
+        try:
+            response = self.session.post(f"{API_BASE}/food-items", json=food_with_emoji)
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("emoji") == "🍎":
+                    self.created_items.append(data["id"])
+                    self.log_test("Emoji Field - User Provided", True, 
+                                f"User emoji '🍎' stored correctly", data)
+                else:
+                    self.log_test("Emoji Field - User Provided", False, 
+                                f"Expected '🍎', got '{data.get('emoji')}'")
+            else:
+                self.log_test("Emoji Field - User Provided", False, 
+                            f"Status {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Emoji Field - User Provided", False, f"Request failed: {str(e)}")
+        
+        # Test 2: Create food items WITHOUT emoji - test AI suggestion
+        test_foods_for_ai = [
+            {"name": "Whole Milk", "category": "dairy"},
+            {"name": "Chicken Breast", "category": "meat"},
+            {"name": "Banana", "category": "produce"},
+            {"name": "Bread", "category": "packaged"}
+        ]
+        
+        for food_data in test_foods_for_ai:
+            try:
+                response = self.session.post(f"{API_BASE}/food-items", json=food_data)
+                if response.status_code == 200:
+                    data = response.json()
+                    emoji = data.get("emoji")
+                    if emoji and emoji != "🍽️":  # Default fallback emoji
+                        self.created_items.append(data["id"])
+                        self.log_test(f"AI Emoji Suggestion - {food_data['name']}", True, 
+                                    f"AI suggested emoji: '{emoji}'", {"emoji": emoji})
+                    elif emoji == "🍽️":
+                        self.created_items.append(data["id"])
+                        self.log_test(f"AI Emoji Suggestion - {food_data['name']}", False, 
+                                    f"Got default emoji '{emoji}' - AI may not be working")
+                    else:
+                        self.log_test(f"AI Emoji Suggestion - {food_data['name']}", False, 
+                                    f"No emoji returned: {data}")
+                else:
+                    self.log_test(f"AI Emoji Suggestion - {food_data['name']}", False, 
+                                f"Status {response.status_code}: {response.text}")
+            except Exception as e:
+                self.log_test(f"AI Emoji Suggestion - {food_data['name']}", False, f"Request failed: {str(e)}")
+        
+        # Test 3: Verify emoji field is returned in GET requests
+        try:
+            response = self.session.get(f"{API_BASE}/food-items")
+            if response.status_code == 200:
+                items = response.json()
+                items_with_emoji = [item for item in items if item.get("emoji")]
+                if items_with_emoji:
+                    self.log_test("Emoji Field in GET Response", True, 
+                                f"Found {len(items_with_emoji)} items with emoji field", 
+                                {"sample_emojis": [item.get("emoji") for item in items_with_emoji[:3]]})
+                else:
+                    self.log_test("Emoji Field in GET Response", False, 
+                                "No items found with emoji field")
+            else:
+                self.log_test("Emoji Field in GET Response", False, 
+                            f"Status {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Emoji Field in GET Response", False, f"Request failed: {str(e)}")
+
+    def test_inventory_filtering(self):
+        """Test inventory filtering functionality"""
+        print("\n🔍 Testing Inventory Filtering...")
+        
+        # First, create test items with specific expiration dates for filtering
+        now = datetime.utcnow()
+        test_items = [
+            {
+                "name": "Expired Yogurt",
+                "category": "dairy",
+                "purchase_date": (now - timedelta(days=10)).isoformat(),
+                "notes": "Should be expired"
+            },
+            {
+                "name": "Expiring Soon Bread",
+                "category": "packaged", 
+                "purchase_date": (now - timedelta(days=2)).isoformat(),
+                "notes": "Should expire within 1-7 days"
+            },
+            {
+                "name": "Fresh Carrots",
+                "category": "produce",
+                "purchase_date": now.isoformat(),
+                "notes": "Should be fresh (>7 days)"
+            }
+        ]
+        
+        created_test_items = []
+        for item_data in test_items:
+            try:
+                response = self.session.post(f"{API_BASE}/food-items", json=item_data)
+                if response.status_code == 200:
+                    data = response.json()
+                    created_test_items.append(data["id"])
+                    self.created_items.append(data["id"])
+            except Exception as e:
+                print(f"Failed to create test item {item_data['name']}: {e}")
+        
+        time.sleep(1)  # Allow items to be created
+        
+        # Test filter options
+        filter_tests = [
+            ("all", "All Items"),
+            ("expired", "Expired Items"),
+            ("expiring_soon", "Expiring Soon Items"),
+            ("fresh", "Fresh Items")
+        ]
+        
+        for filter_value, test_name in filter_tests:
+            try:
+                url = f"{API_BASE}/food-items"
+                if filter_value != "all":
+                    url += f"?filter={filter_value}"
+                
+                response = self.session.get(url)
+                if response.status_code == 200:
+                    items = response.json()
+                    if isinstance(items, list):
+                        self.log_test(f"Filter - {test_name}", True, 
+                                    f"Retrieved {len(items)} items with filter '{filter_value}'", 
+                                    {"count": len(items), "filter": filter_value})
+                    else:
+                        self.log_test(f"Filter - {test_name}", False, 
+                                    f"Expected list, got {type(items)}")
+                else:
+                    self.log_test(f"Filter - {test_name}", False, 
+                                f"Status {response.status_code}: {response.text}")
+            except Exception as e:
+                self.log_test(f"Filter - {test_name}", False, f"Request failed: {str(e)}")
+
+    def test_notification_timing_fix(self):
+        """Test notification timing fix - notifications should only be created within 24 hours of event"""
+        print("\n⏰ Testing Notification Timing Fix...")
+        
+        # Get initial notification count
+        initial_notif_count = 0
+        try:
+            response = self.session.get(f"{API_BASE}/notifications")
+            if response.status_code == 200:
+                initial_notif_count = len(response.json())
+        except:
+            pass
+        
+        # Test 1: Create item expiring in 10 days - should NOT create notifications immediately
+        now = datetime.utcnow()
+        future_item = {
+            "name": "Future Expiry Item",
+            "category": "produce",
+            "purchase_date": now.isoformat(),
+            "notes": "Expires in 10+ days - should not create notifications yet"
+        }
+        
+        try:
+            response = self.session.post(f"{API_BASE}/food-items", json=future_item)
+            if response.status_code == 200:
+                data = response.json()
+                self.created_items.append(data["id"])
+                
+                # Check expiration date is indeed far in future
+                exp_date = datetime.fromisoformat(data["expiration_date"])
+                days_until_expiry = (exp_date - now).days
+                
+                if days_until_expiry >= 7:
+                    # Wait a moment then check notifications
+                    time.sleep(2)
+                    notif_response = self.session.get(f"{API_BASE}/notifications")
+                    if notif_response.status_code == 200:
+                        current_notif_count = len(notif_response.json())
+                        if current_notif_count == initial_notif_count:
+                            self.log_test("Notification Timing - Future Item", True, 
+                                        f"No notifications created for item expiring in {days_until_expiry} days (correct behavior)")
+                        else:
+                            self.log_test("Notification Timing - Future Item", False, 
+                                        f"Notifications were created immediately for future item (bug not fixed)")
+                    else:
+                        self.log_test("Notification Timing - Future Item", False, 
+                                    "Could not verify notification count")
+                else:
+                    self.log_test("Notification Timing - Future Item", False, 
+                                f"Item expires too soon ({days_until_expiry} days) for this test")
+            else:
+                self.log_test("Notification Timing - Future Item", False, 
+                            f"Failed to create test item: {response.status_code}")
+        except Exception as e:
+            self.log_test("Notification Timing - Future Item", False, f"Request failed: {str(e)}")
+        
+        # Test 2: Create item expiring in 3 days - should create notifications (within 24h of 3-day warning)
+        near_future_item = {
+            "name": "Near Expiry Item",
+            "category": "dairy",
+            "purchase_date": (now - timedelta(days=1)).isoformat(),  # Purchased yesterday, will expire soon
+            "notes": "Should create notifications as it's close to expiry warnings"
+        }
+        
+        try:
+            response = self.session.post(f"{API_BASE}/food-items", json=near_future_item)
+            if response.status_code == 200:
+                data = response.json()
+                self.created_items.append(data["id"])
+                
+                # Check expiration date
+                exp_date = datetime.fromisoformat(data["expiration_date"])
+                days_until_expiry = (exp_date - now).days
+                
+                # Wait a moment then check notifications
+                time.sleep(2)
+                notif_response = self.session.get(f"{API_BASE}/notifications")
+                if notif_response.status_code == 200:
+                    notifications = notif_response.json()
+                    # Look for notifications related to this item
+                    item_notifications = [n for n in notifications if n.get("food_item_id") == data["id"]]
+                    
+                    if item_notifications:
+                        self.log_test("Notification Timing - Near Expiry", True, 
+                                    f"Created {len(item_notifications)} notifications for item expiring in {days_until_expiry} days")
+                    else:
+                        # This might be expected if the item doesn't expire within the notification window
+                        if days_until_expiry <= 3:
+                            self.log_test("Notification Timing - Near Expiry", False, 
+                                        f"No notifications created for item expiring in {days_until_expiry} days")
+                        else:
+                            self.log_test("Notification Timing - Near Expiry", True, 
+                                        f"No notifications created for item expiring in {days_until_expiry} days (correct - too far)")
+                else:
+                    self.log_test("Notification Timing - Near Expiry", False, 
+                                "Could not verify notifications")
+            else:
+                self.log_test("Notification Timing - Near Expiry", False, 
+                            f"Failed to create test item: {response.status_code}")
+        except Exception as e:
+            self.log_test("Notification Timing - Near Expiry", False, f"Request failed: {str(e)}")
+
     def test_delete_food_item(self):
         """Test DELETE /api/food-items/{id}"""
         if not self.created_items:
