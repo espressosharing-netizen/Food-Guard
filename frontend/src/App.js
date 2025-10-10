@@ -271,12 +271,12 @@ function App() {
       <div className="card">
         <h3 className="text-xl font-bold mb-4 text-gray-800">Recent Items</h3>
         <div className="space-y-2">
-          {foodItems.slice(0, 5).map((item) => {
+          {[...foodItems].reverse().slice(0, 5).map((item) => {
             const status = getExpirationStatus(item.expiration_date);
             return (
               <div key={item.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
                 <div className="flex items-center space-x-3">
-                  <span className="text-2xl">{getCategoryIcon(item.category)}</span>
+                  <span className="text-2xl">{item.emoji || getCategoryIcon(item.category)}</span>
                   <div>
                     <div className="font-semibold text-gray-800">{item.name}</div>
                     <div className="text-sm text-gray-600">{item.quantity} {item.unit}</div>
