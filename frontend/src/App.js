@@ -429,7 +429,7 @@ function App() {
               <span className="text-2xl">{formData.emoji}</span>
               <button
                 type="button"
-                onClick={() => setFormData({ ...formData, emoji: '' })}
+                onClick={() => handleInputChange('emoji', '')}
                 className="text-xs text-red-600 hover:text-red-800"
               >
                 Clear
@@ -449,7 +449,7 @@ function App() {
                   key={emoji}
                   type="button"
                   onClick={() => {
-                    setFormData({ ...formData, emoji: emoji });
+                    handleInputChange('emoji', emoji);
                     setShowEmojiPicker(false);
                   }}
                   className="text-2xl hover:bg-gray-200 rounded p-1 transition"
