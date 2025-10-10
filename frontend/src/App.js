@@ -57,7 +57,15 @@ function App() {
         : `${BACKEND_URL}/api/food-items`;
       const response = await fetch(url);
       const data = await response.json();
-      setFoodItems(data);
+      
+      // Sort items by expiration date (closest to expiration first)
+      const sortedData = data.sort((a, b) => {
+        const dateA = new Date(a.expiration_date);
+        const dateB = new Date(b.expiration_date);
+        return dateA - dateB;
+      });
+      
+      setFoodItems(sortedData);
     } catch (error) {
       console.error('Error fetching food items:', error);
     }
