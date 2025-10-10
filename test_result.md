@@ -122,15 +122,18 @@ backend:
 
   - task: "Notification Timing Fix"
     implemented: true
-    working: "unknown"
+    working: true
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "unknown"
           agent: "main"
           comment: "Fixed notification bug where all 3 notifications (3 days, 1 day, today) were created immediately. Now notifications only created if event is within 24 hours of current time."
+        - working: true
+          agent: "testing"
+          comment: "NOTIFICATION TIMING FIX VERIFIED: ✅ Items with long shelf life (364+ days) do NOT create immediate notifications (correct behavior). ✅ Items expiring within 1-3 days DO create appropriate notifications. ✅ Calendar events are created regardless, but notifications only trigger within 24 hours of event date. Bug successfully fixed."
 
   - task: "Inventory Filtering Endpoint"
     implemented: true
