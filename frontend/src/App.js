@@ -410,6 +410,7 @@ function App() {
             Notes (Optional)
           </label>
           <textarea
+            key="food-notes-input"
             className="input"
             rows="3"
             placeholder="Any additional notes..."
