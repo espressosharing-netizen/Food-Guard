@@ -482,7 +482,7 @@ function App() {
   );
 
   // Inventory Component
-  const Inventory = () => {
+  const renderInventory = () => {
     const handleFilterChange = async (newFilter) => {
       setFilterStatus(newFilter);
       await fetchFoodItems(newFilter);
