@@ -43,6 +43,7 @@ class FoodItemCreate(BaseModel):
     storage_condition: str = "pantry"
     purchase_date: Optional[str] = None
     notes: Optional[str] = None
+    emoji: Optional[str] = None
 
 class FoodItem(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -55,6 +56,7 @@ class FoodItem(BaseModel):
     expiration_date: str
     current_state: str = "raw"
     notes: Optional[str] = None
+    emoji: Optional[str] = None
     created_at: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
     
     class Config:
