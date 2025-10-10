@@ -124,8 +124,10 @@ function App() {
           quantity: 1,
           unit: 'each',
           storage_condition: 'pantry',
-          notes: ''
+          notes: '',
+          emoji: ''
         });
+        setShowEmojiPicker(false);
 
         // Refresh data
         await fetchAllData();
