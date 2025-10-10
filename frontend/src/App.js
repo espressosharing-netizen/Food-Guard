@@ -321,7 +321,7 @@ function App() {
             className="input"
             placeholder="e.g., Organic Bananas"
             value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            onChange={(e) => handleInputChange('name', e.target.value)}
           />
         </div>
 
@@ -336,7 +336,7 @@ function App() {
               required
               className="input"
               value={formData.quantity}
-              onChange={(e) => setFormData({ ...formData, quantity: parseFloat(e.target.value) })}
+              onChange={(e) => handleInputChange('quantity', parseFloat(e.target.value) || 0)}
             />
           </div>
 
@@ -347,7 +347,7 @@ function App() {
             <select
               className="input"
               value={formData.unit}
-              onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
+              onChange={(e) => handleInputChange('unit', e.target.value)}
             >
               <option value="each">Each</option>
               <option value="lbs">Pounds (lbs)</option>
