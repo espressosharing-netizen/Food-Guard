@@ -395,6 +395,57 @@ function App() {
           />
         </div>
 
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Emoji (Optional - AI will choose if not selected)
+            </label>
+            <button
+              type="button"
+              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              className="text-sm text-blue-600 hover:text-blue-800"
+            >
+              {showEmojiPicker ? '▼ Hide' : '▶ Show Emoji Options'}
+            </button>
+          </div>
+          
+          {formData.emoji && (
+            <div className="mb-2 p-2 bg-gray-50 rounded flex items-center justify-between">
+              <span className="text-2xl">{formData.emoji}</span>
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, emoji: '' })}
+                className="text-xs text-red-600 hover:text-red-800"
+              >
+                Clear
+              </button>
+            </div>
+          )}
+          
+          {showEmojiPicker && (
+            <div className="p-4 border border-gray-300 rounded-lg bg-gray-50 grid grid-cols-8 gap-2">
+              {['🍎', '🍌', '🍊', '🍇', '🥕', '🥦', '🥬', '🥒', 
+                '🍅', '🥔', '🧅', '🧄', '🥛', '🧀', '🥩', '🍗',
+                '🐟', '🍤', '🥚', '🍞', '🥐', '🥖', '🥯', '🍕',
+                '🍝', '🍜', '🍚', '🥫', '🍯', '🧂', '🧈', '🥤',
+                '☕', '🍵', '🧃', '🧊', '🍪', '🍰', '🧁', '🍫',
+                '🍬', '🍭', '🥜', '🌰', '🍿', '🧇', '🥞', '🧆'].map(emoji => (
+                <button
+                  key={emoji}
+                  type="button"
+                  onClick={() => {
+                    setFormData({ ...formData, emoji: emoji });
+                    setShowEmojiPicker(false);
+                  }}
+                  className="text-2xl hover:bg-gray-200 rounded p-1 transition"
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
         <button
           type="submit"
           disabled={loading}
