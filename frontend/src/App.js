@@ -368,7 +368,7 @@ function App() {
             <select
               className="input"
               value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              onChange={(e) => handleInputChange('category', e.target.value)}
             >
               <option value="">Auto-detect</option>
               <option value="produce">Produce</option>
@@ -387,7 +387,7 @@ function App() {
             <select
               className="input"
               value={formData.storage_condition}
-              onChange={(e) => setFormData({ ...formData, storage_condition: e.target.value })}
+              onChange={(e) => handleInputChange('storage_condition', e.target.value)}
             >
               <option value="pantry">Pantry</option>
               <option value="refrigerated">Refrigerated</option>
@@ -406,7 +406,7 @@ function App() {
             rows="3"
             placeholder="Any additional notes..."
             value={formData.notes}
-            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+            onChange={(e) => handleInputChange('notes', e.target.value)}
           />
         </div>
 
