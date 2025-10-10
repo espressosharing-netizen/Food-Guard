@@ -473,7 +473,7 @@ function App() {
         </button>
       </form>
     </div>
-  );
+  ));
 
   // Inventory Component
   const Inventory = () => {
