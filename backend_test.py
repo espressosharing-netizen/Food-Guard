@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Any
 
 # Configuration
-BASE_URL = "https://foodsaver-16.preview.emergentagent.com"
+BASE_URL = "https://inventory-ux-refresh.preview.emergentagent.com"
 API_BASE = f"{BASE_URL}/api"
 
 class FoodManagementTester:
