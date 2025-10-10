@@ -151,6 +151,7 @@ async def create_calendar_events(food_item: dict):
     """Create calendar events for food expiration reminders."""
     expiration_date = datetime.fromisoformat(food_item['expiration_date'])
     events = []
+    current_time = datetime.utcnow()
     
     # Event configurations: (days_before, type, color, priority)
     event_configs = [
@@ -162,7 +163,8 @@ async def create_calendar_events(food_item: dict):
     for days_before, event_type, color, priority in event_configs:
         event_date = expiration_date - timedelta(days=days_before)
         
-        if event_date >= datetime.utcnow():
+        # Only create calendar event if event_date is in the future
+        if event_date >= current_time:
             event = CalendarEvent(
                 food_item_id=food_item['id'],
                 food_name=food_item['name'],
@@ -174,15 +176,21 @@ async def create_calendar_events(food_item: dict):
             )
             events.append(event.model_dump())
             
-            # Also create notification
-            notification = NotificationItem(
-                food_item_id=food_item['id'],
-                food_name=food_item['name'],
-                notification_type=event_type,
-                message=f"{food_item['name']} {'expires today' if days_before == 0 else f'expires in {days_before} day(s)'}!",
-                priority=priority
-            )
-            await db.notifications.insert_one(notification.model_dump())
+            # Only create notification if it's the actual day (within 24 hours of event_date)
+            # Check if today is the day when notification should be sent
+            time_until_event = event_date - current_time
+            hours_until_event = time_until_event.total_seconds() / 3600
+            
+            # Only create notification if event is happening today (within next 24 hours)
+            if hours_until_event <= 24:
+                notification = NotificationItem(
+                    food_item_id=food_item['id'],
+                    food_name=food_item['name'],
+                    notification_type=event_type,
+                    message=f"{food_item['name']} {'expires today' if days_before == 0 else f'expires in {days_before} day(s)'}!",
+                    priority=priority
+                )
+                await db.notifications.insert_one(notification.model_dump())
     
     if events:
         await db.calendar_events.insert_many(events)
