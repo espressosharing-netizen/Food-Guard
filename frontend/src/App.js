@@ -250,7 +250,7 @@ function App() {
   };
 
   // Dashboard Component
-  const Dashboard = () => (
+  const renderDashboard = () => (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="stat-card bg-gradient-to-br from-blue-500 to-blue-600">
