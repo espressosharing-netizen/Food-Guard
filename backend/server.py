@@ -213,6 +213,9 @@ async def create_food_item(item: FoodItemCreate):
         if not item.storage_condition or item.storage_condition == "pantry":
             storage = ai_analysis.get('storage_recommendation', 'pantry')
         
+        # Use user-provided emoji or AI-suggested emoji
+        emoji = item.emoji or ai_analysis.get('emoji', '🍽️')
+        
         # Calculate dates
         purchase_date = item.purchase_date or datetime.utcnow().isoformat()
         shelf_life_days = ai_analysis.get('shelf_life_days', 7)
@@ -227,7 +230,8 @@ async def create_food_item(item: FoodItemCreate):
             storage_condition=storage,
             purchase_date=purchase_date,
             expiration_date=expiration_date,
-            notes=item.notes
+            notes=item.notes,
+            emoji=emoji
         )
         
         # Save to database
