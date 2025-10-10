@@ -220,6 +220,16 @@ function App() {
     return icons[category] || '🍽️';
   };
 
+  const getStorageIcon = (storage_condition) => {
+    const icons = {
+      frozen: '❄️',
+      refrigerated: '🥛',
+      pantry: '📦',
+      room_temp: '🌡️'
+    };
+    return icons[storage_condition] || '📦';
+  };
+
   // Dashboard Component
   const Dashboard = () => (
     <div className="space-y-6">
