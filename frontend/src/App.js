@@ -50,9 +50,12 @@ function App() {
     }
   };
 
-  const fetchFoodItems = async () => {
+  const fetchFoodItems = async (filter = 'all') => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/food-items`);
+      const url = filter && filter !== 'all' 
+        ? `${BACKEND_URL}/api/food-items?filter=${filter}`
+        : `${BACKEND_URL}/api/food-items`;
+      const response = await fetch(url);
       const data = await response.json();
       setFoodItems(data);
     } catch (error) {
