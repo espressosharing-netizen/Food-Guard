@@ -535,11 +535,11 @@ function App() {
                 <div key={item.id} className="food-item">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center space-x-4 flex-1">
-                      <span className="text-3xl">{getStorageIcon(item.storage_condition)}</span>
+                      <span className="text-3xl">{item.emoji || getCategoryIcon(item.category)}</span>
                       <div className="flex-1">
                         <div className="font-bold text-lg text-gray-800">{item.name}</div>
                         <div className="text-sm text-gray-600 space-y-1 mt-1">
-                          <div>📊 {item.quantity} {item.unit} • Storage: {item.storage_condition}</div>
+                          <div>📊 {item.quantity} {item.unit} • {getStorageIcon(item.storage_condition)} {item.storage_condition}</div>
                           <div>🗓️ Added: {formatDate(item.purchase_date)}</div>
                           <div>⏰ Expires: {formatDate(item.expiration_date)}</div>
                           {item.notes && <div>📝 {item.notes}</div>}
