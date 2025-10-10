@@ -145,10 +145,15 @@ function App() {
   };
 
   const handleDelete = async (itemId) => {
-    if (!window.confirm('Are you sure you want to delete this item?')) return;
+    setItemToDelete(itemId);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!itemToDelete) return;
 
     try {
-      const response = await fetch(`${BACKEND_URL}/api/food-items/${itemId}`, {
+      const response = await fetch(`${BACKEND_URL}/api/food-items/${itemToDelete}`, {
         method: 'DELETE',
       });
 
@@ -159,6 +164,9 @@ function App() {
     } catch (error) {
       console.error('Error deleting food item:', error);
       alert('Failed to delete food item');
+    } finally {
+      setShowDeleteConfirm(false);
+      setItemToDelete(null);
     }
   };
 
