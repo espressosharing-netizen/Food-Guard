@@ -558,6 +558,7 @@ function App() {
                           <div>📊 {item.quantity} {item.unit} • {getStorageIcon(item.storage_condition)} {item.storage_condition}</div>
                           <div>🗓️ Added: {formatDate(item.purchase_date)}</div>
                           <div>⏰ Expires: {formatDate(item.expiration_date)}</div>
+                          {item.storage_tips && <div>📌 {item.storage_tips}</div>}
                           {item.notes && <div>📝 {item.notes}</div>}
                         </div>
                       </div>
