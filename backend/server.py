@@ -57,6 +57,7 @@ class FoodItem(BaseModel):
     current_state: str = "raw"
     notes: Optional[str] = None
     emoji: Optional[str] = None
+    storage_tips: Optional[str] = None
     created_at: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
     
     class Config:
@@ -216,6 +217,9 @@ async def create_food_item(item: FoodItemCreate):
         # Use user-provided emoji or AI-suggested emoji
         emoji = item.emoji or ai_analysis.get('emoji', '🍽️')
         
+        # Extract storage tips from AI analysis
+        storage_tips = ai_analysis.get('tips', None)
+        
         # Calculate dates
         purchase_date = item.purchase_date or datetime.utcnow().isoformat()
         shelf_life_days = ai_analysis.get('shelf_life_days', 7)
@@ -231,7 +235,8 @@ async def create_food_item(item: FoodItemCreate):
             purchase_date=purchase_date,
             expiration_date=expiration_date,
             notes=item.notes,
-            emoji=emoji
+            emoji=emoji,
+            storage_tips=storage_tips
         )
         
         # Save to database
