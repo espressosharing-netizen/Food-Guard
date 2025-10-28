@@ -4,7 +4,7 @@ import './App.css';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
 function App() {
-  const [activeTab, setActiveTab] = useState('inventory'); // Q8: Default to inventory
+  const [activeTab, setActiveTab] = useState('dashboard'); // Changed default to dashboard
   const [foodItems, setFoodItems] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [calendarEvents, setCalendarEvents] = useState([]);
@@ -738,8 +738,14 @@ function App() {
       </header>
 
       {/* Q4: Desktop Navigation (hidden on mobile) */}
-      {/* Q8: Reordered tabs */}
+      {/* REORDERED TABS */}
       <nav className="nav hidden md:flex">
+        <button
+          className={`nav-btn ${activeTab === 'dashboard' ? 'active' : ''}`}
+          onClick={() => setActiveTab('dashboard')}
+        >
+          📊 Dashboard
+        </button>
         <button
           className={`nav-btn ${activeTab === 'inventory' ? 'active' : ''}`}
           onClick={() => setActiveTab('inventory')}
@@ -751,12 +757,6 @@ function App() {
           onClick={() => setActiveTab('add')}
         >
           ➕ Add Food
-        </button>
-        <button
-          className={`nav-btn ${activeTab === 'dashboard' ? 'active' : ''}`}
-          onClick={() => setActiveTab('dashboard')}
-        >
-          📊 Dashboard
         </button>
         <button
           className={`nav-btn ${activeTab === 'calendar' ? 'active' : ''}`}
@@ -776,8 +776,15 @@ function App() {
       </main>
 
       {/* Q4: Mobile Bottom Navigation (hidden on desktop) */}
-      {/* Q8: Reordered tabs */}
+      {/* REORDERED TABS */}
       <nav className="fixed bottom-0 left-0 right-0 z-40 flex justify-around items-center bg-white border-t border-gray-200 h-16 md:hidden">
+        <button
+          className={`flex flex-col items-center justify-center p-2 w-1/4 ${activeTab === 'dashboard' ? 'text-blue-600' : 'text-gray-600'}`}
+          onClick={() => setActiveTab('dashboard')}
+        >
+          <span className="text-2xl">📊</span>
+          <span className="text-xs mt-1">Dashboard</span>
+        </button>
         <button
           className={`flex flex-col items-center justify-center p-2 w-1/4 ${activeTab === 'inventory' ? 'text-blue-600' : 'text-gray-600'}`}
           onClick={() => setActiveTab('inventory')}
@@ -791,13 +798,6 @@ function App() {
         >
           <span className="text-2xl">➕</span>
           <span className="text-xs mt-1">Add Food</span>
-        </button>
-        <button
-          className={`flex flex-col items-center justify-center p-2 w-1/4 ${activeTab === 'dashboard' ? 'text-blue-600' : 'text-gray-600'}`}
-          onClick={() => setActiveTab('dashboard')}
-        >
-          <span className="text-2xl">📊</span>
-          <span className="text-xs mt-1">Dashboard</span>
         </button>
         <button
           className={`flex flex-col items-center justify-center p-2 w-1/4 ${activeTab === 'calendar' ? 'text-blue-600' : 'text-gray-600'}`}
